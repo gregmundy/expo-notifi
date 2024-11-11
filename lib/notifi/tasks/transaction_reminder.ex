@@ -51,7 +51,6 @@ defmodule Notifi.Tasks.TransactionReminder do
           }
         },
         %{"$unwind" => "$user_info"},
-        # %{"$match" => %{"user_info.pushNotificationsEnabled" => true}},
         %{
           "$match" => %{
             "user_info.pushNotificationsEnabled" => true,
