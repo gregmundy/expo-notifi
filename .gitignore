@@ -24,3 +24,6 @@ notifi-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# environment changes
+.envrc
