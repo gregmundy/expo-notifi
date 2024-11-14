@@ -9,7 +9,13 @@ defmodule Notifi.NotificationGenerator do
       "title" => "<%= title %>",
       "body" => "<%= body %>",
       "data" => %{
-        "screen" => "BudgetStack"
+        "screen" => "BudgetStack",
+        "params" => %{
+          "screen" => "Budget",
+          "params" => %{
+            "fromPush" => true
+          }
+        }
       }
     }
   }

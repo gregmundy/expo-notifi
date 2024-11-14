@@ -10,6 +10,7 @@ defmodule Notifi.Application do
     mongo_config = Application.get_env(:notifi, :mongo)
 
     children = [
+      Notifi.ReceiptStorage,
       Notifi.Scheduler,
       {Mongo, mongo_config}
     ]
