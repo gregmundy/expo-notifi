@@ -1,6 +1,6 @@
 import Config
 
-config :notifi, :mongo,
-  name: :mongo,
-  url: System.get_env("DATABASE_URL"),
-  pool_size: 3
+config :notifi, :meet_steve,
+  name: :meet_steve,
+  api_base_url: System.get_env("STEVE_API_URL"),
+  api_key: System.get_env("STEVE_API_KEY")

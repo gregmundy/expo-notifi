@@ -11,7 +11,3 @@ config :notifi, Notifi.Scheduler,
     {"* * * * *", {TransactionReminder, :send, []}},
     {"*/30 * * * *", {Notifi.ReceiptChecker, :check_receipts, []}}
   ]
-
-config :notifi, :mongo,
-  name: :mongo,
-  pool_size: 3

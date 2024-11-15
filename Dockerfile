@@ -4,6 +4,10 @@ FROM hexpm/elixir:1.17.3-erlang-27.0.1-debian-bullseye-20241111-slim
 # Set the working directory in the container
 WORKDIR /app
 
+# Add CA Certificates
+RUN apt update
+RUN apt install -y ca-certificates
+
 # Copy mix files and install dependencies
 COPY mix.exs mix.lock ./
 COPY config config

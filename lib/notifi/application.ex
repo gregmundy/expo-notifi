@@ -7,12 +7,9 @@ defmodule Notifi.Application do
 
   @impl true
   def start(_type, _args) do
-    mongo_config = Application.get_env(:notifi, :mongo)
-
     children = [
       Notifi.ReceiptCache,
-      Notifi.Scheduler,
-      {Mongo, mongo_config}
+      Notifi.Scheduler
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

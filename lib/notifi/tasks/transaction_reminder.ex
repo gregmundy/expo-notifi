@@ -3,9 +3,8 @@ defmodule Notifi.Tasks.TransactionReminder do
   Send a transaction reminder notification to the user.
   """
 
-  @unreviewed_threshold 5
-
   alias Notifi.{NotificationGenerator, NotificationClient}
+  alias Notifi.Services.MeetSteve
   require Logger
 
   @doc """
@@ -13,15 +12,16 @@ defmodule Notifi.Tasks.TransactionReminder do
   """
   @spec send() :: :ok
   def send do
-    users_to_notify = find_users_with_unreviewed_transactions()
+    {:ok, users_to_notify} = MeetSteve.get_unreviewed_transactions()
     reminder_note = get_transaction_reminder_message()
 
     notifications =
-      Enum.map(users_to_notify, fn user ->
+      Enum.map(users_to_notify, fn %{ "expoToken" => expoToken } = user ->
+        IO.inspect(user)
         # Render the notification payload for each user
         {:ok, payload} =
           NotificationGenerator.render("transaction_reminder", %{
-            to: user.expoToken,
+            to: expoToken,
             title: reminder_note.title,
             body: reminder_note.body
           })
@@ -33,55 +33,6 @@ defmodule Notifi.Tasks.TransactionReminder do
       [] -> Logger.info("No users to notify")
       _ -> NotificationClient.send_notification(notifications)
     end
-  end
-
-  defp find_users_with_unreviewed_transactions(min_unreviewed_count \\ @unreviewed_threshold) do
-    # query to find users with unreviewed transactions
-    pipeline =
-      [
-        %{"$match" => %{"reviewed" => false}},
-        %{"$group" => %{"_id" => "$userId", "unreviewedCount" => %{"$sum" => 1}}},
-        %{"$match" => %{"unreviewedCount" => %{"$gte" => min_unreviewed_count}}},
-        %{
-          "$lookup" => %{
-            "from" => "User",
-            "localField" => "_id",
-            "foreignField" => "_id",
-            "as" => "user_info"
-          }
-        },
-        %{"$unwind" => "$user_info"},
-        %{
-          "$match" => %{
-            "user_info.pushNotificationsEnabled" => true,
-            "user_info.expoToken" => %{"$ne" => nil}
-          }
-        },
-        %{
-          "$project" => %{
-            "userId" => "$_id",
-            "unreviewedCount" => 1,
-            "expoToken" => "$user_info.expoToken",
-            "pushNotificationsEnabled" => "$user_info.pushNotificationsEnabled",
-            "_id" => 0
-          }
-        }
-      ]
-
-    Mongo.aggregate(:mongo, "PlaidTransaction", pipeline)
-    |> Enum.map(fn %{
-                     "userId" => user_id,
-                     "unreviewedCount" => unreviewed_count,
-                     "expoToken" => expo_token,
-                     "pushNotificationsEnabled" => push_notifications_enabled
-                   } ->
-      %{
-        userId: user_id,
-        unreviewedCount: unreviewed_count,
-        expoToken: expo_token,
-        pushNotificationsEnabled: push_notifications_enabled
-      }
-    end)
   end
 
   defp get_transaction_reminder_message do
