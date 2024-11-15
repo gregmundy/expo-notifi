@@ -26,7 +26,8 @@ defmodule Notifi.MixProject do
       {:httpoison, "~> 2.2"},
       {:jason, "~> 1.4"},
       {:mongodb_driver, "~> 1.5.0"},
-      {:tzdata, "~> 1.1"}
+      {:tzdata, "~> 1.1"},
+      {:mock, "~> 0.3.8", only: :test}
     ]
   end
 end
