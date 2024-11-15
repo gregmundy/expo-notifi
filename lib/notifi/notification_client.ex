@@ -1,12 +1,13 @@
 defmodule Notifi.NotificationClient do
   @moduledoc """
-  This module is responsible for sending push notifications via Expo client.
+  This module is responsible for sending push notifications via Expo client API.
   """
 
   require Logger
-  alias Notifi.ReceiptStorage
+  alias Notifi.ReceiptCache
 
   @expo_push_url "https://exp.host/--/api/v2/push/send"
+  # recommended message chunk size by Expo
   @message_chunk_size 100
   @headers [
     {"host", "exp.host"},
@@ -18,7 +19,7 @@ defmodule Notifi.NotificationClient do
   @initial_retry_delay 1_000
 
   @doc """
-  Send a batch of notifications to Expo.
+  Send a batch of notifications to Expo's push notification service.
   """
   @spec send_notification(list) :: :ok | :error
   def send_notification(notifications) when is_list(notifications) do
@@ -27,6 +28,7 @@ defmodule Notifi.NotificationClient do
     |> Enum.each(&send_batch/1)
   end
 
+  @spec send_batch(list, non_neg_integer) :: :ok | :error
   defp send_batch(notifications, retries \\ 0) when is_list(notifications) do
     case HTTPoison.post(@expo_push_url, Jason.encode!(notifications), @headers) do
       {:ok, %HTTPoison.Response{body: body}} ->
@@ -50,13 +52,15 @@ defmodule Notifi.NotificationClient do
     end
   end
 
+  @spec calculate_exponential_delay(non_neg_integer) :: non_neg_integer
   defp calculate_exponential_delay(attempt) do
     delay = trunc(@initial_retry_delay * :math.pow(2, attempt - 1))
     jitter = :rand.uniform(500)
     delay + jitter
   end
 
+  @spec handle_push_tickets(map) :: :ok
   defp handle_push_tickets(%{"data" => tickets}) when is_list(tickets) do
-    Enum.each(tickets, &ReceiptStorage.store_receipt/1)
+    Enum.each(tickets, fn tickets -> ReceiptCache.store_receipt(tickets, :pending) end)
   end
 end

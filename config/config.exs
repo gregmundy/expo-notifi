@@ -3,9 +3,9 @@ alias Notifi.Tasks.{TransactionReminder, Heartbeat}
 
 config :notifi, Notifi.Scheduler,
   jobs: [
-    {"* * * * *", {Heartbeat, :send, []}},
-    {"* * * * *", {TransactionReminder, :send, []}},
-    {"* * * * *", {Notifi.ReceiptChecker, :check_receipts, []}}
+    {"0 * * * *", {Heartbeat, :send, []}},
+    {"0 17 * * *", {TransactionReminder, :send, []}, timezone: ~c"America/New_York"},
+    {"*/30 * * * *", {Notifi.ReceiptChecker, :check_receipts, []}}
   ]
 
 config :notifi, :mongo,
