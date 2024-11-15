@@ -52,7 +52,7 @@ defmodule Notifi.ReceiptChecker do
     :ok
   end
 
-  @spec maybe_update_push_status({String.t(), map()}) :: :ok
+  @spec maybe_update_push_status({binary(), map()}) :: :ok
   defp maybe_update_push_status({receipt_id, %{"status" => status}}) do
     case status do
       "ok" ->
