@@ -63,8 +63,9 @@ defmodule Notifi.ReceiptCache do
   @doc """
   Deletes a receipt from the cache table.
   """
-  @spec delete_receipt(atom) :: :ok
+  @spec delete_receipt(atom()) :: :ok
   def delete_receipt(receipt_id) do
     :ets.delete(@table, receipt_id)
+    :ok
   end
 end
