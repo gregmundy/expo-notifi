@@ -56,11 +56,11 @@ defmodule Notifi.ReceiptChecker do
   defp maybe_update_push_status({receipt_id, %{"status" => status}}) do
     case status do
       "ok" ->
-        ReceiptCache.update_receipt_status(receipt_id, :ok)
         ReceiptCache.delete_receipt(receipt_id)
 
       _ ->
         ReceiptCache.update_receipt_status(receipt_id, String.to_atom(status))
+        Logger.warning(~c"Push notification failed for receipt: #{receipt_id}. Status: #{status}")
     end
 
     :ok

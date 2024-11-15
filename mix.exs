@@ -25,7 +25,8 @@ defmodule Notifi.MixProject do
       {:quantum, "~> 3.5"},
       {:httpoison, "~> 2.2"},
       {:jason, "~> 1.4"},
-      {:mongodb_driver, "~> 1.5.0"}
+      {:mongodb_driver, "~> 1.5.0"},
+      {:tzdata, "~> 1.1"}
     ]
   end
 end
