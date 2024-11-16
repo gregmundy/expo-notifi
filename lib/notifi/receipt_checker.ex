@@ -52,15 +52,22 @@ defmodule Notifi.ReceiptChecker do
     :ok
   end
 
-  @spec maybe_update_push_status({String.t(), map()}) :: :ok | :error
-  defp maybe_update_push_status({receipt_id, %{"status" => status}}) do
+  @spec maybe_update_push_status({String.t(), map()}) ::
+          {:ok, String.t()} | {:error, String.t()} | {:error, String.t(), String.t()}
+  defp maybe_update_push_status({receipt_id, %{"status" => status}}) when is_binary(receipt_id) do
     case status do
       "ok" ->
-        ReceiptCache.delete_receipt(receipt_id)
+        ReceiptCache.delete_receipt(String.to_atom(receipt_id))
+        {:ok, "#{receipt_id}"}
 
       _ ->
-        ReceiptCache.update_receipt_status(receipt_id, String.to_atom(status))
+        ReceiptCache.update_receipt_status(String.to_atom(receipt_id), String.to_atom(status))
         Logger.warning(~c"Push notification failed for receipt: #{receipt_id}. Status: #{status}")
+        {:error, "#{receipt_id}. Status: #{status}"}
     end
+  end
+
+  defp maybe_update_push_status({_}) do
+    {:error, "Invalid receipt status."}
   end
 end
