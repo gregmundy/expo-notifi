@@ -11,3 +11,5 @@ config :notifi, Notifi.Scheduler,
     {"* * * * *", {TransactionReminder, :send, []}},
     {"*/30 * * * *", {Notifi.ReceiptChecker, :check_receipts, []}}
   ]
+
+  config :httpoison, :hackney, timeout: 10_000, recv_timeout: 15_000
