@@ -8,6 +8,6 @@ config :notifi, Notifi.Scheduler,
   timezone: "America/New_York",
   jobs: [
     {"0 * * * *", {Heartbeat, :send, []}},
-    {"0 17 * * *", {TransactionReminder, :send, []}},
+    {"* * * * *", {TransactionReminder, :send, []}},
     {"*/30 * * * *", {Notifi.ReceiptChecker, :check_receipts, []}}
   ]
