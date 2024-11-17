@@ -12,26 +12,30 @@ defmodule Notifi.Tasks.TransactionReminder do
   """
   @spec send() :: :ok
   def send do
-    {:ok, users_to_notify} = MeetSteve.get_unreviewed_transactions()
-    reminder_note = get_transaction_reminder_message()
+    case MeetSteve.get_unreviewed_transactions() do
+      {:ok, users_to_notify} ->
+        reminder_note = get_transaction_reminder_message()
 
-    notifications =
-      Enum.map(users_to_notify, fn %{ "expoToken" => expoToken } = user ->
-        IO.inspect(user)
-        # Render the notification payload for each user
-        {:ok, payload} =
-          NotificationGenerator.render("transaction_reminder", %{
-            to: expoToken,
-            title: reminder_note.title,
-            body: reminder_note.body
-          })
+        notifications =
+          Enum.map(users_to_notify, fn %{"expoToken" => expoToken} ->
+            # Render the notification payload for each user
+            {:ok, payload} =
+              NotificationGenerator.render("transaction_reminder", %{
+                to: expoToken,
+                title: reminder_note.title,
+                body: reminder_note.body
+              })
 
-        payload
-      end)
+            payload
+          end)
 
-    case notifications do
-      [] -> Logger.info("No users to notify")
-      _ -> NotificationClient.send_notification(notifications)
+        case notifications do
+          [] -> Logger.info("No users to notify")
+          _ -> NotificationClient.send_notification(notifications)
+        end
+
+      {:error, reason} ->
+        Logger.error("Failed to retrieve unreviewed transactions: #{reason}")
     end
   end
 

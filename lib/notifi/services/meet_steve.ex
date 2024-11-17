@@ -31,6 +31,9 @@ defmodule Notifi.Services.MeetSteve do
 
       {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, reason}
+
+      {_, _} ->
+        {:error, "An unknown error occurred"}
     end
   end
 
