@@ -3,16 +3,13 @@ defmodule Notifi.Services.MeetSteve do
   Service module for the Meet Steve API.
   """
 
-  alias Notifi.Config.MeetSteve
+  alias Notifi.Config
   alias HTTPoison
   require Logger
 
-  @api_base_url MeetSteve.api_base_url()
-  @api_key MeetSteve.api_key()
   @headers [
     {"accept", "application/json"},
     {"content-type", "application/json"},
-    {"x-api-key", @api_key}
   ]
 
   @doc """
@@ -20,7 +17,13 @@ defmodule Notifi.Services.MeetSteve do
   """
   @spec get_unreviewed_transactions() :: {:ok, list} | {:error, any}
   def get_unreviewed_transactions do
-    case HTTPoison.get("#{@api_base_url}/admin/users/unreviewed-transactions", @headers) do
+    api_base_url = Config.MeetSteve.api_base_url()
+    api_key = Config.MeetSteve.api_key()
+
+    case HTTPoison.get(
+           "#{api_base_url}/admin/users/unreviewed-transactions",
+           auth_header(api_key)
+         ) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         response =
           body
@@ -40,5 +43,9 @@ defmodule Notifi.Services.MeetSteve do
 
   defp format_response(%{"data" => transactions}) when is_list(transactions) do
     transactions
+  end
+
+  defp auth_header(api_key) do
+    @headers ++ [{"x-api-key", api_key}]
   end
 end

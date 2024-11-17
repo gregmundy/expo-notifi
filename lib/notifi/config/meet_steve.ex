@@ -8,7 +8,7 @@ defmodule Notifi.Config.MeetSteve do
   """
   @spec api_base_url() :: String.t()
   def api_base_url do
-    Application.fetch_env!(:notifi, :meet_steve)[:api_base_url]
+    get_config(:api_base_url)
   end
 
   @doc """
@@ -16,6 +16,11 @@ defmodule Notifi.Config.MeetSteve do
   """
   @spec api_key() :: String.t()
   def api_key do
-    Application.fetch_env!(:notifi, :meet_steve)[:api_key]
+    get_config(:api_key)
+  end
+
+  # Private helper function to fetch configuration
+  defp get_config(key) do
+    Application.get_env(:notifi, :meet_steve)[key]
   end
 end
