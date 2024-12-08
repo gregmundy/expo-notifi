@@ -1,6 +1,6 @@
 # Notifi
 
-**TODO: Add description**
+Expo bulk push notification scheduler service.
 
 ## Installation
 
