@@ -1,8 +1,6 @@
 # Notifi
 
-**TODO: Add description**
-
-Test
+Expo bulk push notification service.
 
 ## Installation
 
