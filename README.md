@@ -1,6 +1,6 @@
 # Notifi
 
-Expo bulk push notification service.
+Expo bulk push notification scheduler service.
 
 ## Installation
 
