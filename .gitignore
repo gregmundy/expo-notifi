@@ -27,3 +27,6 @@ notifi-*.tar
 
 # environment changes
 .envrc
+
+# Claude Code project-local config
+.claude/
